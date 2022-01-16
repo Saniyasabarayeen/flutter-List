@@ -1,3 +1,4 @@
+import 'package:demo/Alert%20Dialog%20box/aleart.dart';
 import 'package:demo/login/lgin_page.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-        home: const Catalog (),
+        home: const Alert(),
     );
   }
 }
