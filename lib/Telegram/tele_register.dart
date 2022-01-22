@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:demo/Telegram/tele_chat.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class teleRegisteration extends StatefulWidget {
   const teleRegisteration({Key? key}) : super(key: key);
@@ -10,6 +13,8 @@ class teleRegisteration extends StatefulWidget {
 
 class _RegisterationState extends State<teleRegisteration> {
   final _formKey = GlobalKey<FormState>();
+  File? image;
+  final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +22,9 @@ class _RegisterationState extends State<teleRegisteration> {
       child: Scaffold(
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add_a_photo),
-            onPressed: () {},
+            onPressed: () {
+              DialogueBox();
+            },
           ),
           appBar: AppBar(
             title: Text("Registeration"),
@@ -32,7 +39,11 @@ class _RegisterationState extends State<teleRegisteration> {
                   SizedBox(
                     height: 30,
                   ),
-                  Image.asset("assets/Telegram.jpg",height: 100,),
+                  Container(
+                      child: image != null
+                          ? CircleAvatar(
+                              radius: 60, backgroundImage: FileImage(image!))
+                          : Image.asset("assets/Telegram.jpg", height: 100)),
                   SizedBox(
                     height: 20,
                   ),
@@ -82,6 +93,11 @@ class _RegisterationState extends State<teleRegisteration> {
                       } else {
                         return null;
                       }
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Chat(),
+                          ));
                     },
                     child: Text(
                       "Next",
@@ -133,5 +149,69 @@ class _RegisterationState extends State<teleRegisteration> {
           contentPadding: EdgeInsets.all(10),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20))),
     );
+  }
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+  Future galleryImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  DialogueBox() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Column(
+              children: [],
+            ),
+            actions: [
+              Column(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.camera),
+                    title: Text("Image from camera"),
+                    onTap: () async {
+                      await getImage();
+                    },
+                  ),
+                  ListTile(
+                      leading: Icon(Icons.image),
+                      title: Text("Image from gallery"),
+                      onTap: ()async {
+                        await galleryImage();
+                      }),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("cancel")),
+                    ],
+                  ),
+                ],
+              )
+            ],
+          );
+        });
   }
 }
